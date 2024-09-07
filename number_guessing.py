@@ -1,7 +1,9 @@
 #!/usr/bin/python3
 
 import random
+import time
 
+# Welcome message
 welcome_message = """
 Welcome to the Number Guessing Game!
 I'm thinking of a number between 1 and 100.
@@ -11,70 +13,125 @@ Please select the difficulty level:
     1. Easy (10 chances)
     2. Medium (5 chances)
     3. Hard (3 chances)
-                """
+"""
 print(welcome_message)
 
+# Dictionary to store high scores for each difficulty level
+high_scores = {
+    "Easy": float('inf'),
+    "Medium": float('inf'),
+    "Hard": float('inf')
+}
+
+
+def provide_hint(my_guess):
+    """
+    Function to provide a hint to the user
+    """
+    hints = []
+    if my_guess % 2 == 0:
+        hints.append(f"The number is even.")
+    else:
+        hints.append(f"The number is odd.")
+
+    divisors = [x for x in range(2, 11) if my_guess % x == 0]
+    if divisors:
+        hints.append(f"The number is divisible by {random.choice(divisors)}.")
+
+    return random.choice(hints)
+
+
 def number_guesser():
+    """
+    Main game logic
+    """
     while True:
         try:
-            difficulty_level = int(input("Enter your choice: "))
+            # Get difficulty level from the user
+            difficulty_level = int(input("Enter your choice (1 for Easy, 2\
+ for Medium, 3 for Hard or 4 to quit): "))
 
-            if difficulty_level:
-                mode = None
-                chances = None
+            # Set the number of chances based on the difficulty level
+            if difficulty_level == 1:
+                mode = "Easy"
+                chances = 10
+            elif difficulty_level == 2:
+                mode = "Medium"
+                chances = 5
+            elif difficulty_level == 3:
+                mode = "Hard"
+                chances = 3
+            elif difficulty_level == 4:
+                print("Okay then, come back anytime soon. Bye")
+                exit()
+            else:
+                print("You have entered an incorrect mode, please try again.")
+                continue
 
-                if difficulty_level == 1:
-                    mode = "Easy"
-                    chances = 10
-                elif difficulty_level == 2:
-                    mode = "Medium"
-                    chances = 5
-                elif difficulty_level == 3:
-                    mode = "Hard"
-                    chances = 3
-                else:
-                    print("You have entered the incorrect mode")
-                    exit()
-            print("\n\nGreat! You have selected the {} difficulty level.\nLet's start\
- the game".format(mode))
-            my_guess = random.randint(0, 100)
-            print(my_guess)
-            try:
-                attempts = 0
-                while chances > 0:
-                    user_guess = int(input("Enter your guess: "))
+            print(f"\n\nGreat! You have selected the {mode} difficulty\
+ level.\nLet's start the game!")
+            my_guess = random.randint(1, 100)  # Generate randome number
+            attempts = 0
+            start_time = time.time()  # Start timer
+
+            # User guessing loop
+            while chances > 0:
+                try:
+                    user_guess = int(input("Enter your guess (between 1\
+ and 100): "))
                     attempts += 1
 
                     if user_guess == my_guess:
-                        print("Congratulations! You guessed the correct number in\
- {} attempts.".format(attempts))
-                        exit()
+                        end_time = time.time()  # End timer
+                        total_time = round(end_time - start_time, 2)
+                        print(f"Congratulations! You guessed the correct\
+ number in {attempts} attempts and {total_time} seconds.")
+
+                        # Check and update high score
+                        if attempts < high_scores[mode]:
+                            high_scores[mode] = attempts
+                            print(f"New high score for {mode} difficulty:\
+ {attempts} attempts!")
+                        else:
+                            print(f"Your high score for {mode} difficulty is\
+ {high_scores[mode]} attempts.")
+
+                        break
                     else:
                         chances -= 1
                         if user_guess < my_guess:
                             status = "greater"
-                        elif user_guess > my_guess:
+                        else:
                             status = "less"
-                        print("Incorrect! The number is {} than {}.\
-".format(status, user_guess))
+                        print(f"\nIncorrect! The number is {status} than\
+ {user_guess}. You have {chances} chances left.")
+
+                        # Provide a hint if the user is stuck
+                        if chances == 2:
+                            print("Hint: " + provide_hint(my_guess))
+
                         if chances == 0:
-                            print("The number you failed to guess is {}\
-".format(my_guess))
-            except ValueError:
-                print("Please guess a number between 0 and 100")
-
+                            print(f"\nGame over! The number you failed to\
+ guess was {my_guess}.")
+                except ValueError:
+                    print("Invalid input! Please enter a valid number between\
+1 and 100.")
         except ValueError:
-            print("Please Enter either 1 for Easy, 2 for medium or 3 for Hard")
+            print("Please enter a valid choice (1 for Easy, 2 for Medium, or 3\
+ for Hard).")
 
+
+# Main loop to restart the game
 while True:
-    number_guesser()
+    number_guesser()  # Start the number guessing game
 
-    user_choice = input("Want to give it another try?").lower()
+    # Ask the user if they want to play again
+    user_choice = input("Do you want to play again? (yes/no): ").lower()
     if user_choice == "yes":
-        print("Great! You are welcome to play")
+        print("Great! Restarting the game...")
     elif user_choice == "no":
-        print("Okay then, come back anytime soon. Until next time, bye bye")
-        break
+        print("Okay then, come back anytime soon. Until next time, bye bye!")
+        break  # Exit the loop and end the program
     else:
-        print("You have entered an invalid response.")
-        break
+        print("Invalid input. Please type 'yes' or 'no'. Exiting the game.")
+        break  # Exit the program on an invalid response
