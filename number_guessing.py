@@ -118,20 +118,8 @@ def number_guesser():
 1 and 100.")
         except ValueError:
             print("Please enter a valid choice (1 for Easy, 2 for Medium, or 3\
- for Hard).")
+ for Hard and 4 to quit the game).")
 
 
-# Main loop to restart the game
-while True:
-    number_guesser()  # Start the number guessing game
-
-    # Ask the user if they want to play again
-    user_choice = input("Do you want to play again? (yes/no): ").lower()
-    if user_choice == "yes":
-        print("Great! Restarting the game...")
-    elif user_choice == "no":
-        print("Okay then, come back anytime soon. Until next time, bye bye!")
-        break  # Exit the loop and end the program
-    else:
-        print("Invalid input. Please type 'yes' or 'no'. Exiting the game.")
-        break  # Exit the program on an invalid response
+# initiate the call to the main function
+number_guesser()
